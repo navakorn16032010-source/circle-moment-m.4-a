@@ -49,7 +49,6 @@
     padding: 0 10px 10px;
   }
 
-  /* ---- Canvas area ---- */
   .canvas-wrap {
     background: var(--panel);
     border: 1px solid var(--border);
@@ -59,7 +58,6 @@
   }
   canvas { display: block; width: 100%; border-radius: 8px; background: #07111f; }
 
-  /* ---- Controls ---- */
   .controls {
     background: var(--panel);
     border: 1px solid var(--border);
@@ -89,7 +87,6 @@
     font-weight: 600;
   }
 
-  /* ---- Info Display ---- */
   .info-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -128,7 +125,6 @@
     margin-top: 2px;
   }
 
-  /* ---- Tabs ---- */
   .tabs { display: flex; gap: 6px; padding: 0 10px; }
   .tab {
     flex: 1;
@@ -145,7 +141,6 @@
   }
   .tab.active { background: var(--accent); color: #0a0e1a; font-weight: 700; border-color: var(--accent); }
 
-  /* ---- Formula section ---- */
   .formulas {
     background: var(--panel);
     border: 1px solid var(--border);
@@ -202,7 +197,6 @@
   }
   .var-desc { color: var(--muted); }
 
-  /* ---- Sin/Cos explainer ---- */
   .trig-section { display: none; }
   .trig-section.active { display: block; }
   .trig-wrap {
@@ -211,7 +205,7 @@
     border-radius: 14px;
     padding: 12px;
   }
-  canvas#trigCanvas { border-radius: 8px; background: #07111f; }
+  canvas#trigCanvas { border-radius: 8px; background: #07111f; display: block; width: 100%; max-width: 340px; margin: 0 auto; }
   .trig-explain {
     margin-top: 10px;
     font-size: 0.8rem;
@@ -227,22 +221,6 @@
     border-left: 3px solid var(--accent2);
   }
   .trig-box .f-eq { font-size: 0.82rem; }
-
-  .badge {
-    display: inline-block;
-    background: var(--accent);
-    color: #0a0e1a;
-    font-size: 0.7rem;
-    font-weight: 700;
-    padding: 1px 6px;
-    border-radius: 4px;
-    margin-right: 4px;
-  }
-  .badge.red { background: var(--red); }
-  .badge.green { background: var(--accent3); }
-  .badge.yellow { background: var(--accent4); }
-  .badge.purple { background: var(--purple); }
-  .badge.pink { background: var(--accent2); }
 
   .mode-btns { display: flex; gap: 6px; margin-bottom: 10px; }
   .mode-btn {
@@ -263,7 +241,7 @@
   .sim-section { display: none; }
   .sim-section.active { display: block; }
 
-  .play-row { display: flex; gap: 8px; align-items: center; margin-top: 6px; }
+  .play-row { display: flex; gap: 8px; align-items: center; margin-top: 6px; margin-bottom: 10px; }
   .play-btn {
     padding: 7px 18px;
     border-radius: 8px;
@@ -275,7 +253,7 @@
     font-size: 0.85rem;
     cursor: pointer;
   }
-  .play-btn.stop { background: var(--red); }
+  .play-btn.stop { background: var(--red); color: white; }
   .speed-label { font-size: 0.75rem; color: var(--muted); }
 </style>
 </head>
@@ -283,38 +261,32 @@
 
 <h1>การเคลื่อนที่แบบ<span>วงกลม</span> ม.4</h1>
 
-<!-- TAB BAR -->
 <div class="tabs">
-  <button class="tab active" onclick="switchTab('sim')">🔵 แบบจำลอง</button>
-  <button class="tab" onclick="switchTab('formula')">📐 สูตร</button>
-  <button class="tab" onclick="switchTab('trig')">📐 sin/cos</button>
+  <button class="tab active" id="tab-sim" onclick="switchTab('sim')">🔵 แบบจำลอง</button>
+  <button class="tab" id="tab-formula" onclick="switchTab('formula')">📐 สูตร</button>
+  <button class="tab" id="tab-trig" onclick="switchTab('trig')">📐 sin/cos</button>
 </div>
 
 <div class="main" id="mainContent">
 
-  <!-- ===== SIM TAB ===== -->
   <div class="sim-section active" id="simTab">
 
-    <!-- Mode buttons -->
     <div class="mode-btns" style="margin-top:8px">
       <button class="mode-btn active" onclick="setMode('conical')" id="btnConical">🔴 Conical Pendulum<br><small>ลูกตุ้มวงกลม</small></button>
       <button class="mode-btn" onclick="setMode('banked')" id="btnBanked">🔵 Banked Road<br><small>ถนนโค้งเอียง</small></button>
     </div>
 
-    <!-- Canvas -->
     <div class="canvas-wrap">
       <canvas id="mainCanvas" height="320"></canvas>
     </div>
 
-    <!-- Play controls -->
     <div class="play-row">
       <button class="play-btn" id="playBtn" onclick="togglePlay()">▶ เริ่ม</button>
       <span class="speed-label">ความเร็ว: </span>
       <input type="range" min="0.2" max="3" step="0.1" value="1" id="speedSlider" style="flex:1" oninput="updateSpeed(this.value)">
-      <span class="val" id="speedVal">1×</span>
+      <span class="val" id="speedVal">1.0×</span>
     </div>
 
-    <!-- Controls -->
     <div class="controls">
       <div class="ctrl-group">
         <label>มุม θ (องศา) <span>θ</span></label>
@@ -328,8 +300,8 @@
       </div>
       <div class="ctrl-group">
         <label>ความยาวเชือก L <span>L</span></label>
-        <input type="range" min="0.3" max="3" step="0.1" value="1" id="lenSlider" oninput="updateSim()">
-        <span class="val" id="lenVal">1.0 m</span>
+        <input type="range" min="0.5" max="3" step="0.1" value="1.5" id="lenSlider" oninput="updateSim()">
+        <span class="val" id="lenVal">1.5 m</span>
       </div>
       <div class="ctrl-group">
         <label>g (แรงโน้มถ่วง)</label>
@@ -338,7 +310,6 @@
       </div>
     </div>
 
-    <!-- Info boxes -->
     <div class="info-grid">
       <div class="info-box">
         <div class="info-label">รัศมีวงกลม r</div>
@@ -377,220 +348,93 @@
     </div>
   </div>
 
-  <!-- ===== FORMULA TAB ===== -->
   <div class="formulas" id="formulaTab">
-
-    <!-- Variables -->
     <div class="f-section">
       <div class="f-title">📦 ตัวแปรทั้งหมด</div>
       <div class="f-card">
         <div class="vars-grid">
-          <span class="var-sym">θ</span><span class="var-desc">มุมที่เชือกทำกับแนวดิ่ง (องศา หรือ เรเดียน)</span>
+          <span class="var-sym">θ</span><span class="var-desc">มุมที่เชือกทำกับแนวดิ่ง หรือมุมเอียงถนน (องศา)</span>
           <span class="var-sym">L</span><span class="var-desc">ความยาวเชือก (เมตร)</span>
           <span class="var-sym">r</span><span class="var-desc">รัศมีวงกลม (เมตร) — ระยะจากแกนหมุนถึงวัตถุ</span>
           <span class="var-sym">m</span><span class="var-desc">มวลของวัตถุ (กิโลกรัม)</span>
-          <span class="var-sym">g</span><span class="var-desc">ความเร่งโน้มถ่วง = 9.8 m/s²</span>
-          <span class="var-sym">v</span><span class="var-desc">ความเร็วเชิงเส้น (m/s)</span>
+          <span class="var-sym">g</span><span class="var-desc">ความเร่งโน้มถ่วง (m/s²)</span>
+          <span class="var-sym">v</span><span class="var-desc">ความเร็วเชิงเส้นตามเส้นขอบวงกลม (m/s)</span>
           <span class="var-sym">ω</span><span class="var-desc">ความเร็วเชิงมุม (rad/s) — omega</span>
-          <span class="var-sym">f</span><span class="var-desc">ความถี่ (รอบ/วินาที หรือ Hz)</span>
-          <span class="var-sym">T</span><span class="var-desc">คาบ (วินาที/รอบ) — เวลา 1 รอบ</span>
-          <span class="var-sym">a꜀</span><span class="var-desc">ความเร่งสู่ศูนย์กลาง (m/s²)</span>
+          <span class="var-sym">f</span><span class="var-desc">ความถี่ของการหมุน (รอบ/วินาที หรือ Hz)</span>
+          <span class="var-sym">T</span><span class="var-desc">คาบเวลาต่อการหมุน 1 รอบ (วินาที)</span>
           <span class="var-sym">F꜀</span><span class="var-desc">แรงสู่ศูนย์กลาง (นิวตัน)</span>
-          <span class="var-sym">Fc(บน)</span><span class="var-desc">ความตึงเชือก หรือแรงปฏิกิริยา (N)</span>
         </div>
       </div>
     </div>
 
-    <!-- ω, f, T -->
     <div class="f-section">
       <div class="f-title">⏱ ความสัมพันธ์ ω, f, T</div>
-
       <div class="f-card">
         <div class="f-eq">ω = 2π/T = 2πf</div>
-        <div class="f-desc">ω (โอเมก้า) คือมุมที่หมุนได้ต่อวินาที หน่วย rad/s<br>
-          ถ้าหมุน 1 รอบ = 2π เรเดียน ใช้เวลา T วินาที → ω = 2π/T</div>
-        <div class="f-use">✅ ใช้เมื่อรู้คาบ T หรือความถี่ f แล้วอยากได้ ω</div>
+        <div class="f-desc">ω (โอเมก้า) คือมุมที่หมุนได้ต่อวินาที หน่วย rad/s<br>หมุน 1 รอบ = 2π เรเดียน ใช้เวลา T วินาที</div>
+        <div class="f-use">✅ ใช้เมื่อรู้คาบ T หรือความถี่ f แล้วอยากหา ω</div>
       </div>
-
       <div class="f-card">
-        <div class="f-eq">f = 1/T &nbsp;|&nbsp; T = 1/f</div>
-        <div class="f-desc">f คือจำนวนรอบต่อวินาที, T คือเวลาต่อ 1 รอบ<br>
-          ตัวอย่าง: f = 2 Hz → หมุน 2 รอบ/วินาที → T = 0.5 วินาที/รอบ</div>
-        <div class="f-use">✅ ใช้แปลงระหว่าง f กับ T</div>
-      </div>
-
-      <div class="f-card">
-        <div class="f-eq">v = rω = 2πr/T = 2πrf</div>
-        <div class="f-desc">ความเร็วเชิงเส้น v = รัศมี × ความเร็วเชิงมุม<br>
-          ยิ่งรัศมีมาก หรือหมุนเร็ว → v มากขึ้น</div>
-        <div class="f-use">✅ ใช้หา v จาก r และ ω</div>
+        <div class="f-eq">v = rω = 2πr/T</div>
+        <div class="f-desc">ความเร็วเชิงเส้น v = รัศมี × ความเร็วเชิงมุม</div>
+        <div class="f-use">✅ ใช้หา v จากรัศมี r และความเร็วเชิงมุม ω</div>
       </div>
     </div>
 
-    <!-- Centripetal -->
     <div class="f-section">
-      <div class="f-title">⭕ ความเร่งและแรงสู่ศูนย์กลาง</div>
-
+      <div class="f-title">⭕ แรงสู่ศูนย์กลาง</div>
       <div class="f-card">
-        <div class="f-eq">a꜀ = v²/r = ω²r</div>
-        <div class="f-desc">ความเร่งสู่ศูนย์กลาง — ชี้เข้าหาศูนย์กลางเสมอ<br>
-          ทิศทางเปลี่ยนตลอด แต่ขนาดคงที่ (ถ้า v คงที่)</div>
-        <div class="f-use">✅ ใช้หาความเร่ง เมื่อรู้ v และ r</div>
-      </div>
-
-      <div class="f-card">
-        <div class="f-eq">F꜀ = mv²/r = mω²r = ma꜀</div>
-        <div class="f-desc">แรงสู่ศูนย์กลาง — ต้องมีแรงนี้เพื่อให้วัตถุเดินวงกลม<br>
-          แรงนี้คือ "ผลลัพธ์" ของแรงอื่น เช่น ความตึงเชือก, แรงปฏิกิริยา, แรงโน้มถ่วง</div>
-        <div class="f-use">✅ ใช้หาแรงที่ทำให้วัตถุเดินวงกลม</div>
+        <div class="f-eq">F꜀ = mv²/r = mω²r</div>
+        <div class="f-desc">แรงสู่ศูนย์กลาง — ทิศชี้เข้าหาจุดศูนย์กลางวงกลมเสมอ ไม่ใช่แรงใหม่ แต่เป็นหน้าที่ของแรงภายนอกมาทำหน้าที่แทน</div>
+        <div class="f-use">✅ ใช้ตั้งสมการแรงหลักของเรื่องวงกลมทุกชนิด</div>
       </div>
     </div>
 
-    <!-- Conical Pendulum -->
     <div class="f-section">
       <div class="f-title">🔴 Conical Pendulum (ลูกตุ้มวงกลม)</div>
-      <div style="background:var(--panel2);border-radius:8px;padding:8px;margin-bottom:8px;font-size:0.78rem;color:var(--muted);line-height:1.6">
-        วัตถุแขวนเชือกแล้วหมุนเป็นวงกลม เชือกทำมุม θ กับแนวดิ่ง<br>
-        <strong style="color:var(--text)">แรงที่กระทำ:</strong> แรงโน้มถ่วง mg ↓ + ความตึงเชือก T เฉียงขึ้น
-      </div>
-
       <div class="f-card">
         <div class="f-eq">r = L·sinθ</div>
-        <div class="f-desc">รัศมีวงกลม = ความยาวเชือก × sin(มุม)<br>
-          <strong style="color:var(--accent2)">ทำไมต้อง sinθ?</strong> เพราะ r คือระยะแนวนอน และเชือกทำมุม θ กับแนวดิ่ง → ด้านตรงข้ามมุม θ คือแนวนอน → sin</div>
-        <div class="f-use">✅ ใช้หารัศมีจาก L และ θ</div>
+        <div class="f-desc">รัศมีวงกลมแนวราบแตกจากความยาวเชือกเฉียง</div>
       </div>
-
       <div class="f-card">
-        <div class="f-eq">T·cosθ = mg &nbsp;→&nbsp; T = mg/cosθ</div>
-        <div class="f-desc">แนวดิ่ง: แรงขึ้น = แรงลง<br>
-          <strong style="color:var(--accent2)">ทำไมต้อง cosθ?</strong> ความตึงเชือก T เฉียง → ส่วนที่เป็นแนวดิ่งคือ T·cosθ (ด้านชิดมุม θ → cos)</div>
-        <div class="f-use">✅ ใช้หาความตึงเชือก</div>
+        <div class="f-eq">T·cosθ = mg &nbsp;|&nbsp; T·sinθ = mv²/r</div>
+        <div class="f-desc">สมดุลแกนตั้ง และ แกนนอนที่ทำหน้าที่เป็นแรงสู่ศูนย์กลาง</div>
       </div>
-
       <div class="f-card">
-        <div class="f-eq">T·sinθ = mv²/r &nbsp;→&nbsp; F꜀ = T·sinθ</div>
-        <div class="f-desc">แนวนอน: ส่วนแนวนอนของ T = แรงสู่ศูนย์กลาง<br>
-          <strong style="color:var(--accent2)">ทำไมต้อง sinθ?</strong> T·sinθ คือส่วนแนวนอนของเชือก (ด้านตรงข้ามมุม → sin)</div>
-        <div class="f-use">✅ ใช้หาแรงสู่ศูนย์กลาง</div>
-      </div>
-
-      <div class="f-card">
-        <div class="f-eq">tanθ = v²/(rg)</div>
-        <div class="f-desc">หารสมการแนวนอนด้วยแนวดิ่ง: (T·sinθ)/(T·cosθ) = (mv²/r)/(mg)<br>
-          → tanθ = v²/(rg)<br>
-          → v = √(rg·tanθ)</div>
-        <div class="f-use">✅ ใช้หา v จากมุม θ และรัศมี</div>
-      </div>
-
-      <div class="f-card">
-        <div class="f-eq">ω = √(g/(L·cosθ))</div>
-        <div class="f-desc">แทน r = L·sinθ และ v = rω ในสมการ → ได้ ω ตรงๆ จาก L และ θ<br>
-          → T = 2π√(Lcosθ/g)</div>
-        <div class="f-use">✅ ใช้หา ω หรือ T โดยไม่ต้องผ่าน v</div>
+        <div class="f-eq">tanθ = v²/(rg) &nbsp;→&nbsp; v = √(rg·tanθ)</div>
+        <div class="f-use">✅ ใช้หาความเร็วหรือมุมเมื่อวัตถุควงเชือกคงที่</div>
       </div>
     </div>
-
-    <!-- Banked Road -->
-    <div class="f-section">
-      <div class="f-title">🔵 Banked Road (ถนนโค้งเอียง)</div>
-      <div style="background:var(--panel2);border-radius:8px;padding:8px;margin-bottom:8px;font-size:0.78rem;color:var(--muted);line-height:1.6">
-        รถวิ่งบนถนนที่เอียงทำมุม θ กับแนวนอน<br>
-        <strong style="color:var(--text)">แรงที่กระทำ:</strong> แรงโน้มถ่วง mg ↓ + แรงปฏิกิริยา N ตั้งฉากผิว
-      </div>
-
-      <div class="f-card">
-        <div class="f-eq">tanθ = v²/(rg)</div>
-        <div class="f-desc">มุมเอียงที่พอดีสำหรับความเร็ว v และรัศมี r<br>
-          (ไม่ต้องใช้แรงเสียดทาน เมื่อเดินทางด้วยความเร็วนี้พอดี)</div>
-        <div class="f-use">✅ ใช้ออกแบบมุมถนนโค้ง หรือหาความเร็วที่ปลอดภัย</div>
-      </div>
-
-      <div class="f-card">
-        <div class="f-eq">N·cosθ = mg &nbsp;→&nbsp; N = mg/cosθ</div>
-        <div class="f-desc">แรงปฏิกิริยา N ตั้งฉากผิว → ส่วนแนวดิ่ง = N·cosθ = mg</div>
-        <div class="f-use">✅ ใช้หาแรงปฏิกิริยาพื้น</div>
-      </div>
-
-      <div class="f-card">
-        <div class="f-eq">N·sinθ = mv²/r</div>
-        <div class="f-desc">ส่วนแนวนอนของ N = แรงสู่ศูนย์กลาง</div>
-        <div class="f-use">✅ ใช้หาแรงสู่ศูนย์กลาง</div>
-      </div>
-    </div>
-
-    <!-- Vertical circle -->
-    <div class="f-section">
-      <div class="f-title">⬆ วงกลมแนวดิ่ง (ที่จุดสูงสุด/ต่ำสุด)</div>
-
-      <div class="f-card">
-        <div class="f-eq">จุดต่ำสุด: T - mg = mv²/r &nbsp;→&nbsp; T = mg + mv²/r</div>
-        <div class="f-desc">แรงสุทธิขึ้น = แรงสู่ศูนย์กลาง<br>
-          T ใหญ่ที่สุดที่จุดต่ำสุด (รู้สึกหนักมากตอนก้น)</div>
-        <div class="f-use">✅ ใช้หาความตึงเชือกที่จุดล่างสุด</div>
-      </div>
-
-      <div class="f-card">
-        <div class="f-eq">จุดสูงสุด: T + mg = mv²/r &nbsp;→&nbsp; T = mv²/r - mg</div>
-        <div class="f-desc">แรงสุทธิลง = แรงสู่ศูนย์กลาง<br>
-          T น้อยที่สุดที่จุดสูงสุด ถ้า T = 0 → v_min = √(rg)</div>
-        <div class="f-use">✅ ใช้หาความเร็วต่ำสุดที่ยังวิ่งวงกลมได้</div>
-      </div>
-    </div>
-
   </div>
 
-  <!-- ===== TRIG TAB ===== -->
   <div class="trig-section" id="trigTab">
     <div class="trig-wrap">
-      <div class="f-title" style="margin-bottom:8px">📐 เข้าใจ sin และ cos ครั้งเดียวจบ!</div>
-      <canvas id="trigCanvas" width="340" height="200" style="width:100%;max-width:340px"></canvas>
+      <div class="f-title">📐 เข้าใจ sin และ cos ครั้งเดียวจบ!</div>
+      <canvas id="trigCanvas" width="340" height="200"></canvas>
       <div class="trig-explain">
-        <strong>หลักง่ายๆ:</strong> สามเหลี่ยมมุมฉาก มีด้าน 3 ด้าน<br>
-        เมื่อกำหนดมุม <strong style="color:var(--accent)">θ</strong>:
-        <div class="trig-box" style="margin-top:6px">
-          <div class="f-eq">sin θ = ด้านตรงข้ามมุม / ด้านตรงข้ามมุมฉาก (ด้านเฉียง)</div>
+        <strong>หลักสำคัญในการจำ:</strong> ให้ดูมุม <strong style="color:var(--accent)">θ</strong> เป็นหลัก<br>
+        <div class="trig-box">
+          <div class="f-eq">หนีบมุม / ชิดมุม → ใช้ cos θ</div>
         </div>
         <div class="trig-box">
-          <div class="f-eq">cos θ = ด้านชิดมุม / ด้านเฉียง</div>
-        </div>
-        <div class="trig-box">
-          <div class="f-eq">tan θ = sin θ / cos θ = ด้านตรงข้าม / ด้านชิด</div>
+          <div class="f-eq">เปิดมุม / ตรงข้ามมุม → ใช้ sin θ</div>
         </div>
         <br>
-        <strong>จำง่ายๆ:</strong><br>
-        👉 <strong style="color:var(--accent2)">แนวนอน</strong> (x) → <strong>cos</strong> (ชิด = นอน)<br>
-        👉 <strong style="color:var(--accent3)">แนวดิ่ง</strong> (y) → <strong>sin</strong> (ตรงข้าม = ตั้ง)<br><br>
-        <strong>ตัวอย่าง:</strong> ถ้าแรง F ทำมุม θ กับแนวนอน<br>
-        → ส่วนแนวนอน = <strong style="color:var(--accent)">F·cosθ</strong><br>
-        → ส่วนแนวดิ่ง = <strong style="color:var(--accent2)">F·sinθ</strong><br><br>
-        <strong>แต่ถ้าทำมุม θ กับแนวดิ่ง (เช่นเชือก):</strong><br>
-        → ส่วนแนวนอน = <strong style="color:var(--accent)">T·sinθ</strong> (ตรงข้ามมุม)<br>
-        → ส่วนแนวดิ่ง = <strong style="color:var(--accent2)">T·cosθ</strong> (ชิดมุม)<br><br>
-        <div style="background:var(--panel2);border-radius:8px;padding:8px;border-left:3px solid var(--accent4)">
-          <strong style="color:var(--accent4)">⚠ วิธีจำ: ดูว่ามุม θ วัดจากแนวไหน!</strong><br>
-          มุมวัดจากแนวดิ่ง → ส่วนแนวนอนใช้ sin<br>
-          มุมวัดจากแนวนอน → ส่วนแนวนอนใช้ cos<br>
-          <em style="color:var(--muted)">(ส่วนที่ "ชิด" มุม → cos, ส่วนที่ "ตรงข้าม" มุม → sin)</em>
-        </div>
-        <br>
-        <strong>ค่าสำคัญที่ต้องจำ:</strong><br>
-        <div style="font-family:'JetBrains Mono',monospace;font-size:0.8rem;margin-top:4px">
-          sin 0° = 0 &nbsp;|&nbsp; sin 30° = 0.5 &nbsp;|&nbsp; sin 37° ≈ 0.6 &nbsp;|&nbsp; sin 45° ≈ 0.707 &nbsp;|&nbsp; sin 53° ≈ 0.8 &nbsp;|&nbsp; sin 90° = 1<br>
-          cos 0° = 1 &nbsp;|&nbsp; cos 30° ≈ 0.87 &nbsp;|&nbsp; cos 37° ≈ 0.8 &nbsp;|&nbsp; cos 45° ≈ 0.707 &nbsp;|&nbsp; cos 53° ≈ 0.6 &nbsp;|&nbsp; cos 90° = 0
-        </div>
+        <strong>⚠️ จุดระวัง:</strong> ในเรื่องลูกตุ้มกรวย มุม θ วัดจาก <strong>"แนวดิ่ง"</strong>:<br>
+        • แรงแกนดิ่งอยู่ติดมุม θ จึงกลายเป็น <strong style="color:var(--accent3)">T·cosθ</strong><br>
+        • แรงแกนนอนพุ่งเข้าหาศูนย์กลางเปิดหนีจากมุม θ จึงเป็น <strong style="color:var(--accent2)">T·sinθ</strong>
       </div>
     </div>
   </div>
 
-</div><!-- end main -->
+</div>
 
 <script>
 // ---- State ----
-let angle = 37, mass = 1, len = 1, g = 9.8;
+let angle = 37, mass = 1, len = 1.5, g = 9.8;
 let mode = 'conical';
 let playing = false, speed = 1;
-let phi = 0; // rotation angle for 3D animation
+let phi = 0; 
 let raf = null;
 let lastT = null;
 let activeTab = 'sim';
@@ -598,18 +442,17 @@ let activeTab = 'sim';
 // ---- Tab switching ----
 function switchTab(tab) {
   activeTab = tab;
-  document.querySelectorAll('.tab').forEach((b,i) => {
-    b.classList.toggle('active', ['sim','formula','trig'][i] === tab);
-  });
+  document.getElementById('tab-sim').classList.toggle('active', tab === 'sim');
+  document.getElementById('tab-formula').classList.toggle('active', tab === 'formula');
+  document.getElementById('tab-trig').classList.toggle('active', tab === 'trig');
+  
   document.getElementById('simTab').style.display = tab === 'sim' ? 'block' : 'none';
   document.getElementById('formulaTab').style.display = tab === 'formula' ? 'block' : 'none';
   document.getElementById('trigTab').style.display = tab === 'trig' ? 'block' : 'none';
+  
   if(tab === 'trig') drawTrig();
-  if(tab === 'sim') { updateSim(); drawScene(); }
+  if(tab === 'sim') { updateSim(); }
 }
-// init
-document.getElementById('formulaTab').style.display = 'none';
-document.getElementById('trigTab').style.display = 'none';
 
 // ---- Mode ----
 function setMode(m) {
@@ -625,10 +468,12 @@ function updateSim() {
   mass = +document.getElementById('massSlider').value;
   len = +document.getElementById('lenSlider').value;
   g = +document.getElementById('gSlider').value;
+  
   document.getElementById('angleVal').textContent = angle + '°';
   document.getElementById('massVal').textContent = mass.toFixed(1) + ' kg';
   document.getElementById('lenVal').textContent = len.toFixed(1) + ' m';
   document.getElementById('gVal').textContent = g.toFixed(1) + ' m/s²';
+  
   calcAndDisplay();
   if(!playing) drawScene();
 }
@@ -642,19 +487,27 @@ function togglePlay() {
   playing = !playing;
   document.getElementById('playBtn').textContent = playing ? '⏸ หยุด' : '▶ เริ่ม';
   document.getElementById('playBtn').classList.toggle('stop', playing);
-  if(playing) { lastT = null; loop(); }
-  else { cancelAnimationFrame(raf); drawScene(); }
+  if(playing) { 
+    lastT = null; 
+    raf = requestAnimationFrame(loop); 
+  } else { 
+    cancelAnimationFrame(raf); 
+    drawScene(); 
+  }
 }
 
 function loop(t) {
   if(!playing) return;
   if(lastT !== null) {
     let dt = (t - lastT) / 1000 * speed;
-    // omega from physics
     let thetaR = angle * Math.PI / 180;
-    let r = len * Math.sin(thetaR);
     let cosT = Math.cos(thetaR);
     let omega = (cosT > 0.01) ? Math.sqrt(g / (len * cosT)) : 1;
+    if(mode === 'banked') {
+      let r = len * Math.sin(thetaR || 0.1);
+      let v = Math.sqrt(r * g * Math.tan(thetaR));
+      omega = v / (r || 1);
+    }
     phi += omega * dt;
   }
   lastT = t;
@@ -667,30 +520,36 @@ function calcAndDisplay() {
   let thetaR = angle * Math.PI / 180;
   let sinT = Math.sin(thetaR), cosT = Math.cos(thetaR), tanT = Math.tan(thetaR);
   let r = len * sinT;
-  let T_tension = mass * g / cosT;
+  if(r < 0.05) r = 0.05;
+  
+  let T_tension = mass * g / (cosT || 0.01);
   let v = Math.sqrt(r * g * tanT);
   let omega = (cosT > 0.001) ? Math.sqrt(g / (len * cosT)) : 0;
+  if(mode === 'banked') {
+    v = Math.sqrt(r * g * tanT);
+    omega = v / r;
+  }
   let period = (omega > 0) ? 2 * Math.PI / omega : 0;
   let Fc = mass * v * v / r;
 
-  document.getElementById('rVal').textContent = r.toFixed(3) + ' m';
-  document.getElementById('tVal').textContent = T_tension.toFixed(2) + ' N';
-  document.getElementById('vVal').textContent = v.toFixed(3) + ' m/s';
-  document.getElementById('wVal').textContent = omega.toFixed(3) + ' rad/s';
-  document.getElementById('periodVal').textContent = period.toFixed(3) + ' s';
+  document.getElementById('rVal').textContent = r.toFixed(2) + ' m';
+  document.getElementById('tVal').textContent = mode === 'conical' ? T_tension.toFixed(2) + ' N' : 'N/A';
+  document.getElementById('vVal').textContent = v.toFixed(2) + ' m/s';
+  document.getElementById('wVal').textContent = omega.toFixed(2) + ' rad/s';
+  document.getElementById('periodVal').textContent = period.toFixed(2) + ' s';
   document.getElementById('fcVal').textContent = Fc.toFixed(2) + ' N';
 
+  let mg = (mass * g).toFixed(1);
   if(mode === 'conical') {
-    let mg = (mass * g).toFixed(2);
-    let Tsinθ = (T_tension * sinT).toFixed(2);
-    let Tcosθ = (T_tension * cosT).toFixed(2);
+    let Tsinθ = (T_tension * sinT).toFixed(1);
+    let Tcosθ = (T_tension * cosT).toFixed(1);
     document.getElementById('forceBreak').textContent =
-      `mg=${mg}N ↓ | T=${T_tension.toFixed(2)}N เฉียง | T·sin${angle}°=${Tsinθ}N → ศูนย์กลาง | T·cos${angle}°=${Tcosθ}N ↑`;
+      `mg = ${mg}N ↓ | T = ${T_tension.toFixed(1)}N เฉียง | T·sinθ = ${Tsinθ}N (เข้าหาศูนย์กลาง) | T·cosθ = ${Tcosθ}N ↑`;
   } else {
-    let N = (mass * g / cosT).toFixed(2);
-    let Nsinθ = (mass * g / cosT * sinT).toFixed(2);
+    let N = (mass * g / cosT).toFixed(1);
+    let Nsinθ = (mass * g / cosT * sinT).toFixed(1);
     document.getElementById('forceBreak').textContent =
-      `mg=${(mass*g).toFixed(2)}N ↓ | N=${N}N ⊥ผิว | N·sin${angle}°=${Nsinθ}N → ศูนย์กลาง`;
+      `mg = ${mg}N ↓ | N = ${N}N ⊥ผิวถนน | N·sinθ = ${Nsinθ}N (เข้าหาศูนย์กลาง)`;
   }
 }
 
@@ -698,227 +557,141 @@ function calcAndDisplay() {
 function drawScene() {
   const canvas = document.getElementById('mainCanvas');
   const ctx = canvas.getContext('2d');
-  const W = canvas.width = canvas.offsetWidth * window.devicePixelRatio || 360;
-  const H = canvas.height = 320 * window.devicePixelRatio;
-  ctx.scale(1, 1);
+  const dpr = window.devicePixelRatio || 1;
+  const rect = canvas.getBoundingClientRect();
+  
+  canvas.width = rect.width * dpr;
+  canvas.height = 320 * dpr;
+  ctx.scale(dpr, dpr);
 
-  const cx = W / 2, cy = H * 0.38;
-  const scale = Math.min(W, H) * 0.35;
+  const W = rect.width;
+  const H = 320;
+  const cx = W / 2, cy = H * 0.3;
+  const scale = Math.min(W, H) * 0.4;
+  
   let thetaR = angle * Math.PI / 180;
   let sinT = Math.sin(thetaR), cosT = Math.cos(thetaR);
-  let r3d = len * sinT;
 
   ctx.clearRect(0, 0, W, H);
   ctx.fillStyle = '#07111f';
   ctx.fillRect(0, 0, W, H);
 
-  // Stars
-  ctx.fillStyle = 'rgba(255,255,255,0.15)';
-  for(let i = 0; i < 30; i++) {
-    let sx = ((i * 137 + 50) % W), sy = ((i * 97 + 30) % (H * 0.6));
-    ctx.fillRect(sx, sy, 1, 1);
+  // Background grid stars
+  ctx.fillStyle = 'rgba(255,255,255,0.1)';
+  for(let i = 0; i < 20; i++) {
+    let sx = ((i * 193 + 25) % W), sy = ((i * 79 + 15) % (H * 0.7));
+    ctx.fillRect(sx, sy, 2, 2);
   }
 
-  if(mode === 'conical') drawConical(ctx, cx, cy, scale, thetaR, sinT, cosT, r3d, W, H);
-  else drawBanked(ctx, cx, cy, scale, thetaR, sinT, cosT, r3d, W, H);
+  if(mode === 'conical') {
+    let px = scale * sinT;
+    let py = scale * cosT;
+    let rx = px, ry = px * 0.25;
 
-  // Angle display on canvas
-  ctx.font = `bold ${14 * (W/360)}px 'JetBrains Mono'`;
+    // Orbit path
+    ctx.save();
+    ctx.strokeStyle = 'rgba(56,189,248,0.25)';
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.ellipse(cx, cy + py, rx, ry, 0, 0, Math.PI * 2);
+    ctx.stroke();
+    ctx.restore();
+
+    // Vertical Central Axis
+    ctx.save();
+    ctx.strokeStyle = '#1e293b';
+    ctx.setLineDash([4, 4]);
+    ctx.beginPath(); ctx.moveTo(cx, cy - 10); ctx.lineTo(cx, cy + py + 30); ctx.stroke();
+    ctx.restore();
+
+    // Dynamic Ball location
+    let ballX = cx + rx * Math.cos(phi);
+    let ballY = cy + py + ry * Math.sin(phi);
+
+    // String
+    ctx.save();
+    ctx.strokeStyle = '#94a3b8';
+    ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(ballX, ballY); ctx.stroke();
+    ctx.restore();
+
+    // Pivot
+    ctx.beginPath(); ctx.arc(cx, cy, 5, 0, Math.PI * 2);
+    ctx.fillStyle = '#f472b6'; ctx.fill();
+
+    // Mass object
+    ctx.beginPath(); ctx.arc(ballX, ballY, 10, 0, Math.PI * 2);
+    let grad = ctx.createRadialGradient(ballX-3, ballY-3, 1, ballX, ballY, 10);
+    grad.addColorStop(0, '#60a5fa'); grad.addColorStop(1, '#1d4ed8');
+    ctx.fillStyle = grad; ctx.fill();
+
+    // Vector Overlays (Calculated at the static front-most position for clear study)
+    let staticBX = cx + rx;
+    let staticBY = cy + py;
+    let arrowScale = 45;
+
+    drawArrow(ctx, staticBX, staticBY, staticBX, staticBY + 50, '#f87171', 'mg');
+    drawArrow(ctx, staticBX, staticBY, staticBX - 45, staticBY, '#purple', 'Fc');
+    let tx = cx - staticBX, ty = cy - staticBY;
+    let tLen = Math.sqrt(tx*tx + ty*ty) || 1;
+    drawArrow(ctx, staticBX, staticBY, staticBX + (tx/tLen)*55, staticBY + (ty/tLen)*55, '#34d399', 'T');
+
+    // Angle overlay
+    ctx.save();
+    ctx.strokeStyle = '#fbbf24';
+    ctx.beginPath(); ctx.arc(cx, cy, 25, Math.PI/2, Math.PI/2 + thetaR); ctx.stroke();
+    ctx.fillStyle = '#fbbf24'; ctx.font = '12px Sarabun';
+    ctx.fillText('θ', cx + 10, cy + 38);
+    ctx.restore();
+
+  } else {
+    // Banked Road View
+    let roadW = scale * 0.9;
+    let roadH = roadW * Math.tan(thetaR);
+    let rx = cx, ry = cy + 100;
+
+    ctx.save();
+    ctx.strokeStyle = '#60a5fa';
+    ctx.lineWidth = 3;
+    ctx.fillStyle = '#111827';
+    ctx.beginPath();
+    ctx.moveTo(rx - roadW, ry);
+    ctx.lineTo(rx + roadW, ry - roadH);
+    ctx.lineTo(rx + roadW, ry);
+    ctx.closePath();
+    ctx.fill(); ctx.stroke();
+    ctx.restore();
+
+    // Car object on slope
+    let carX = rx + roadW * 0.1;
+    let carY = ry - roadH * 0.55;
+    
+    ctx.save();
+    ctx.translate(carX, carY);
+    ctx.rotate(-thetaR);
+    ctx.fillStyle = '#fbbf24';
+    ctx.fillRect(-16, -8, 32, 16);
+    ctx.fillStyle = '#000';
+    ctx.fillRect(-12, -6, 24, 4);
+    ctx.restore();
+
+    // Forces on Banked Road
+    drawArrow(ctx, carX, carY, carX, carY + 55, '#f87171', 'mg');
+    drawArrow(ctx, carX, carY, carX - 45, carY, '#purple', 'Fc');
+    
+    let nx = -Math.sin(thetaR) * 55;
+    let ny = -Math.cos(thetaR) * 55;
+    drawArrow(ctx, carX, carY, carX + nx, carY + ny, '#34d399', 'N');
+
+    // Angle label
+    ctx.fillStyle = '#fbbf24'; ctx.font = '14px Sarabun';
+    ctx.fillText('θ', rx - roadW + 35, ry - 8);
+  }
+
+  // Dynamic canvas metrics
+  ctx.font = "bold 13px 'JetBrains Mono'";
   ctx.fillStyle = '#fbbf24';
-  ctx.fillText(`θ = ${angle}°`, 10, 20 * (W/360));
-}
-
-function drawConical(ctx, cx, cy, scale, thetaR, sinT, cosT, r3d, W, H) {
-  let px = scale * r3d / len;
-  let py = scale * cosT;
-
-  // Ellipse for orbit plane
-  let rx = px, ry = px * 0.3;
-  ctx.save();
-  ctx.globalAlpha = 0.18;
-  ctx.strokeStyle = '#38bdf8';
-  ctx.lineWidth = 1.5;
-  ctx.beginPath();
-  ctx.ellipse(cx, cy + py, rx, ry, 0, 0, Math.PI * 2);
-  ctx.stroke();
-  ctx.globalAlpha = 1;
-  ctx.restore();
-
-  // Dashed vertical axis
-  ctx.save();
-  ctx.strokeStyle = '#334155';
-  ctx.lineWidth = 1;
-  ctx.setLineDash([4, 4]);
-  ctx.beginPath(); ctx.moveTo(cx, cy - 20); ctx.lineTo(cx, cy + py + ry + 10); ctx.stroke();
-  ctx.setLineDash([]);
-  ctx.restore();
-
-  // 3D rotating ball position
-  let bx = cx + px * Math.sin(phi);
-  let by = cy + py + ry * Math.cos(phi) * 0.3;
-  // But for 2D simplicity, show fixed-angle side view + rotating dot on ellipse
-  let ballX = cx + px * Math.cos(phi);
-  let ballY = cy + py + ry * (-Math.cos(phi) * 0.3);
-
-  // String (side view silhouette)
-  ctx.save();
-  ctx.strokeStyle = '#e2e8f0';
-  ctx.lineWidth = 2;
-  ctx.beginPath();
-  ctx.moveTo(cx, cy);
-  ctx.lineTo(ballX, cy + py);
-  ctx.stroke();
-  ctx.restore();
-
-  // String to ball (to orbit plane)
-  ctx.save();
-  ctx.strokeStyle = 'rgba(226,232,240,0.5)';
-  ctx.lineWidth = 1.5;
-  ctx.setLineDash([3,3]);
-  ctx.beginPath();
-  ctx.moveTo(cx, cy);
-  ctx.lineTo(ballX, ballY);
-  ctx.stroke();
-  ctx.setLineDash([]);
-  ctx.restore();
-
-  // Pivot point
-  ctx.beginPath();
-  ctx.arc(cx, cy, 6, 0, Math.PI * 2);
-  ctx.fillStyle = '#f472b6';
-  ctx.fill();
-
-  // Ball
-  let ballR = 10 * (W/360);
-  let grad = ctx.createRadialGradient(ballX - 2, ballY - 2, 1, ballX, ballY, ballR);
-  grad.addColorStop(0, '#60a5fa');
-  grad.addColorStop(1, '#1d4ed8');
-  ctx.beginPath(); ctx.arc(ballX, ballY, ballR, 0, Math.PI*2);
-  ctx.fillStyle = grad; ctx.fill();
-
-  // Force arrows (on main string position)
-  let mainBX = cx + px, mainBY = cy + py;
-  let arrowScale = 40 * (W/360);
-  let mg = mass * 9.8;
-  let T_tension = mass * g / cosT;
-
-  // mg arrow (down)
-  drawArrow(ctx, mainBX, mainBY, mainBX, mainBY + Math.min(mg/10, 1.5) * arrowScale, '#f87171', 'mg');
-  // Tension arrow (along string toward pivot)
-  let tx = cx - mainBX, ty = cy - mainBY;
-  let tLen = Math.sqrt(tx*tx + ty*ty);
-  let tScale = Math.min(T_tension/15, 1.5) * arrowScale;
-  drawArrow(ctx, mainBX, mainBY, mainBX + tx/tLen*tScale, mainBY + ty/tLen*tScale, '#34d399', 'T');
-  // Centripetal (horizontal toward axis)
-  let Fc = mass * g * Math.tan(thetaR);
-  let fcScale = Math.min(Fc/15, 1.5) * arrowScale;
-  drawArrow(ctx, mainBX, mainBY, mainBX - fcScale, mainBY, '#a78bfa', 'Fc');
-
-  // Angle arc
-  ctx.save();
-  ctx.strokeStyle = '#fbbf24';
-  ctx.lineWidth = 1.5;
-  ctx.beginPath();
-  ctx.arc(cx, cy, 28, Math.PI/2, Math.PI/2 + thetaR);
-  ctx.stroke();
-  ctx.fillStyle = '#fbbf24';
-  ctx.font = `${11*(W/360)}px 'Sarabun'`;
-  ctx.fillText('θ', cx + 16, cy + 18);
-  ctx.restore();
-
-  // r label
-  ctx.save();
-  ctx.strokeStyle = '#94a3b8';
-  ctx.lineWidth = 1;
-  ctx.setLineDash([3,3]);
-  ctx.beginPath(); ctx.moveTo(cx, cy + py); ctx.lineTo(mainBX, cy + py); ctx.stroke();
-  ctx.setLineDash([]);
-  ctx.fillStyle = '#94a3b8';
-  ctx.font = `${11*(W/360)}px 'JetBrains Mono'`;
-  ctx.fillText('r = L·sinθ', cx + 4, cy + py - 4);
-  ctx.restore();
-
-  // L label
-  ctx.save();
-  ctx.fillStyle = '#e2e8f0';
-  ctx.font = `${11*(W/360)}px 'JetBrains Mono'`;
-  let midX = (cx + mainBX) / 2, midY = (cy + cy + py) / 2;
-  ctx.fillText('L', midX + 6, midY);
-  ctx.restore();
-}
-
-function drawBanked(ctx, cx, cy, scale, thetaR, sinT, cosT, r3d, W, H) {
-  // Draw a banked road cross section
-  let roadW = scale * 0.7;
-  let roadH = roadW * Math.tan(thetaR);
-  let topY = cy + 40;
-
-  // Road surface
-  ctx.save();
-  ctx.strokeStyle = '#60a5fa';
-  ctx.lineWidth = 2;
-  ctx.fillStyle = 'rgba(96,165,250,0.08)';
-  ctx.beginPath();
-  ctx.moveTo(cx - roadW, topY + roadH);
-  ctx.lineTo(cx + roadW, topY - roadH);
-  ctx.lineTo(cx + roadW + 10, topY - roadH + 10);
-  ctx.lineTo(cx - roadW + 10, topY + roadH + 10);
-  ctx.closePath();
-  ctx.fill(); ctx.stroke();
-  ctx.restore();
-
-  // Car (rectangle on road)
-  let carCX = cx + roadW * 0.3, carCY = topY - roadH * 0.3;
-  ctx.save();
-  ctx.translate(carCX, carCY);
-  ctx.rotate(-thetaR);
-  ctx.fillStyle = '#fbbf24';
-  ctx.fillRect(-18, -10, 36, 20);
-  ctx.fillStyle = '#1e3a5f';
-  ctx.fillRect(-12, -8, 24, 10);
-  ctx.restore();
-
-  // Normal force arrow (perpendicular to road)
-  let nLen = 60;
-  let nX = carCX + nLen * (-sinT), nY = carCY + nLen * (-cosT);
-  drawArrow(ctx, carCX, carCY - 10, nX, nY - 10, '#34d399', 'N');
-
-  // mg arrow (down)
-  drawArrow(ctx, carCX, carCY, carCX, carCY + 60, '#f87171', 'mg');
-
-  // Fc arrow (horizontal toward center)
-  let fcLen = 50;
-  drawArrow(ctx, carCX, carCY, carCX - fcLen, carCY, '#a78bfa', 'Fc');
-
-  // N components (dashed)
-  ctx.save();
-  ctx.setLineDash([3,3]);
-  ctx.strokeStyle = 'rgba(52,211,153,0.4)';
-  ctx.lineWidth = 1;
-  // Ncosθ up
-  ctx.beginPath(); ctx.moveTo(nX, nY - 10); ctx.lineTo(nX, carCY - 10); ctx.stroke();
-  // Nsinθ horizontal
-  ctx.beginPath(); ctx.moveTo(nX, carCY - 10); ctx.lineTo(carCX, carCY - 10); ctx.stroke();
-  ctx.setLineDash([]);
-  ctx.restore();
-
-  // Labels
-  ctx.fillStyle = '#34d399';
-  ctx.font = `${10*(W/360)}px 'JetBrains Mono'`;
-  ctx.fillText('N·cosθ', nX + 4, (nY + carCY) / 2 - 10);
-  ctx.fillText('N·sinθ', (nX + carCX) / 2 - 20, carCY - 14);
-
-  // Angle arc on road
-  ctx.save();
-  ctx.strokeStyle = '#fbbf24';
-  ctx.lineWidth = 1.5;
-  ctx.beginPath();
-  ctx.arc(cx - roadW, topY + roadH, 30, -Math.PI/2, -Math.PI/2 + thetaR);
-  ctx.stroke();
-  ctx.fillStyle = '#fbbf24';
-  ctx.font = `${11*(W/360)}px 'Sarabun'`;
-  ctx.fillText('θ', cx - roadW + 18, topY + roadH - 10);
-  ctx.restore();
+  ctx.fillText(`θ = ${angle}° | Mode: ${mode.toUpperCase()}`, 12, 22);
 }
 
 function drawArrow(ctx, x1, y1, x2, y2, color, label) {
@@ -926,89 +699,64 @@ function drawArrow(ctx, x1, y1, x2, y2, color, label) {
   let len = Math.sqrt(dx*dx + dy*dy);
   if(len < 2) return;
   let ux = dx/len, uy = dy/len;
-  let hs = 9;
+  let hs = 7;
 
   ctx.save();
-  ctx.strokeStyle = color;
-  ctx.fillStyle = color;
+  ctx.strokeStyle = color === '#purple' ? '#a78bfa' : color;
+  ctx.fillStyle = color === '#purple' ? '#a78bfa' : color;
   ctx.lineWidth = 2;
   ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke();
   ctx.beginPath();
   ctx.moveTo(x2, y2);
-  ctx.lineTo(x2 - hs*ux + hs*0.5*(-uy), y2 - hs*uy + hs*0.5*ux);
-  ctx.lineTo(x2 - hs*ux - hs*0.5*(-uy), y2 - hs*uy - hs*0.5*ux);
+  ctx.lineTo(x2 - hs*ux + hs*0.4*(-uy), y2 - hs*uy + hs*0.4*ux);
+  ctx.lineTo(x2 - hs*ux - hs*0.4*(-uy), y2 - hs*uy - hs*0.4*ux);
   ctx.closePath(); ctx.fill();
 
   if(label) {
-    ctx.font = 'bold 11px JetBrains Mono';
-    ctx.fillStyle = color;
-    ctx.fillText(label, x2 + 5, y2 + 5);
+    ctx.font = "bold 11px 'JetBrains Mono'";
+    ctx.fillText(label, x2 + 6, y2 + 4);
   }
   ctx.restore();
 }
 
-// ---- Trig Canvas ----
 function drawTrig() {
   const canvas = document.getElementById('trigCanvas');
-  if(!canvas) return;
   const ctx = canvas.getContext('2d');
-  const W = canvas.width = canvas.offsetWidth > 0 ? canvas.offsetWidth * window.devicePixelRatio : 340;
-  const H = 200 * window.devicePixelRatio;
-  canvas.height = H;
-  const scale = W / 340;
+  const W = canvas.width = 340;
+  const H = 200;
 
   ctx.clearRect(0, 0, W, H);
   ctx.fillStyle = '#07111f';
   ctx.fillRect(0, 0, W, H);
 
-  const ox = 40 * scale, oy = 170 * scale;
-  const hw = 180 * scale, hh = 140 * scale;
-  let θ = 37 * Math.PI / 180;
-  let ax = ox + hw, ay = oy;
-  let bx = ox, by = oy - hh;
-  let cx2 = ax, cy2 = oy - hh;
-
-  // Triangle
+  const ox = 50, oy = 160;
+  const hw = 160, hh = 110;
+  
   ctx.strokeStyle = '#e2e8f0';
-  ctx.lineWidth = 2 * scale;
-  ctx.beginPath(); ctx.moveTo(ox, oy); ctx.lineTo(ax, ay); ctx.lineTo(ax, by); ctx.closePath(); ctx.stroke();
+  ctx.lineWidth = 2;
+  ctx.beginPath(); ctx.moveTo(ox, oy); ctx.lineTo(ox + hw, oy); ctx.lineTo(ox + hw, oy - hh); ctx.closePath(); ctx.stroke();
 
-  // Right angle box
-  let sq = 10 * scale;
   ctx.strokeStyle = '#475569';
-  ctx.lineWidth = 1 * scale;
-  ctx.strokeRect(ax - sq, by, sq, sq);
+  ctx.strokeRect(ox + hw - 10, oy - 10, 10, 10);
 
-  // Hypotenuse label
-  let mx = (ox + ax) / 2 + 5, my = (oy + by) / 2 - 15;
-  ctx.fillStyle = '#e2e8f0'; ctx.font = `bold ${14*scale}px Sarabun`;
-  ctx.fillText('ด้านเฉียง (H)', mx - 20*scale, my);
+  ctx.fillStyle = '#e2e8f0'; ctx.font = '12px Sarabun';
+  ctx.fillText('ด้านเฉียง (T)', ox + hw/2 - 30, oy - hh/2 - 10);
+  
+  ctx.fillStyle = '#f472b6'; font = '12px Sarabun';
+  ctx.fillText('ตรงข้ามมุม (T·sinθ)', ox + hw + 5, oy - hh/2);
 
-  // Opposite label
-  ctx.fillStyle = '#f472b6'; ctx.font = `bold ${13*scale}px Sarabun`;
-  ctx.fillText('ด้านตรงข้าม', ax + 4*scale, (oy + by) / 2);
-
-  // Adjacent label
-  ctx.fillStyle = '#38bdf8'; ctx.font = `bold ${13*scale}px Sarabun`;
-  ctx.fillText('ด้านชิด', (ox + ax) / 2 - 20*scale, oy + 18*scale);
-
-  // Angle arc
-  ctx.strokeStyle = '#fbbf24'; ctx.lineWidth = 2*scale;
-  ctx.beginPath(); ctx.arc(ox, oy, 30*scale, -θ, 0); ctx.stroke();
-  ctx.fillStyle = '#fbbf24'; ctx.font = `bold ${13*scale}px Sarabun`;
-  ctx.fillText('θ', ox + 32*scale, oy - 10*scale);
-
-  // sin/cos labels
-  ctx.fillStyle = '#f472b6'; ctx.font = `${12*scale}px JetBrains Mono`;
-  ctx.fillText('sinθ = ตรงข้าม/เฉียง', 10*scale, 14*scale);
   ctx.fillStyle = '#38bdf8';
-  ctx.fillText('cosθ = ชิด/เฉียง', 10*scale, 28*scale);
+  ctx.fillText('ชิดมุม (T·cosθ)', ox + hw/2 - 30, oy + 16);
+
+  ctx.strokeStyle = '#fbbf24'; ctx.lineWidth = 1.5;
+  ctx.beginPath(); ctx.arc(ox + hw, oy - hh, 25, Math.PI/2, Math.PI); ctx.stroke();
+  ctx.fillStyle = '#fbbf24'; ctx.font = '12px Sarabun';
+  ctx.fillText('θ', ox + hw - 18, oy - hh + 35);
 }
 
 // ---- Init ----
 updateSim();
-drawScene();
-window.addEventListener('resize', () => { drawScene(); if(activeTab==='trig') drawTrig(); });
+window.addEventListener('resize', () => { updateSim(); if(activeTab==='trig') drawTrig(); });
 </script>
 </body>
 </html>
